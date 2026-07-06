@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "External document processing worker for MX One. Polls the document-worker Edge Function, extracts text from PDFs, chunks and embeds, and reports progress.",
   "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+"main": "index.js",
+"scripts": {
+  "start": "node index.js",
+  "dev": "node --watch index.js"
+}
   },
   "engines": {
     "node": ">=20"
