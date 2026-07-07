@@ -97,5 +97,7 @@ async function embedOpenAI(texts) {
   return sorted.map((d) => d.embedding);
 }
 
-  return json.data.map((d) => d.embedding);
+  const json = await res.json();
+  const sorted = [...json.data].sort((a, b) => a.index - b.index);
+  return sorted.map((d) => d.embedding);
 }
