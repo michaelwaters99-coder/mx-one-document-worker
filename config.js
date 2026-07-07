@@ -17,7 +17,12 @@ export const CONFIG = {
   CHUNK_SIZE: Number(process.env.CHUNK_SIZE ?? 1200),
   CHUNK_OVERLAP: Number(process.env.CHUNK_OVERLAP ?? 150),
   CHUNKS_PER_BATCH: Number(process.env.CHUNKS_PER_BATCH ?? 32),
-  EMBED_PROVIDER: (process.env.EMBED_PROVIDER || "mock").toLowerCase(),
+  // Default: `server` → send chunk text only, let the document-worker Edge
+  // Function embed with the managed LOVABLE_API_KEY. Guarantees vector-space
+  // parity with Copilot. Other values (`lovable`, `openai`) are for local
+  // testing only. `mock` is disabled and will throw.
+  EMBED_PROVIDER: (process.env.EMBED_PROVIDER || "server").toLowerCase(),
+  LOVABLE_API_KEY: process.env.LOVABLE_API_KEY || "",
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
 };
 
