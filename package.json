@@ -1,7 +1,7 @@
 {
   "name": "mxone-document-worker",
   "version": "1.0.0",
-  "description": "External document processing worker for MX One.",
+  "description": "External document processing worker for MX One. Polls the document-worker Edge Function, extracts text from PDFs, chunks and embeds, and reports progress.",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
