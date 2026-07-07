@@ -1,29 +1,43 @@
 import { CONFIG } from "./config.js";
+import { sanitizeText } from "./sanitize.js";
 
-// Simple sliding-window chunker over each page's text.
-// Yields { chunk_index, page_number, content } items in order.
-export function chunkPages(pages) {
+// Sliding-window chunker over each page's text.
+// `perPageHints` is a map/array of { page_number, ata_chapter, ata_section, heading_path }
+// produced by enrichDocument(). When provided, those fields are attached to each chunk.
+export function chunkPages(pages, perPageHints) {
   const size = CONFIG.CHUNK_SIZE;
   const overlap = CONFIG.CHUNK_OVERLAP;
   const chunks = [];
   let idx = 0;
 
-  for (const page of pages) {
-    const text = (page.text || "").replace(/\s+\n/g, "\n").trim();
-    if (!text) continue;
+  const hintByPage = new Map();
+  for (const h of perPageHints ?? []) {
+    if (h?.page_number != null) hintByPage.set(h.page_number, h);
+  }
 
-    if (text.length <= size) {
-      chunks.push({ chunk_index: idx++, page_number: page.page_number, content: text });
-      continue;
-    }
+  for (const page of pages) {
+    const text = sanitizeText((page.text || "")).replace(/\s+\n/g, "\n").trim();
+    if (!text) continue;
+    const hint = hintByPage.get(page.page_number) ?? {};
+
+    const push = (content) => {
+      chunks.push({
+        chunk_index: idx++,
+        page_number: page.page_number,
+        content,
+        ata_chapter: hint.ata_chapter ?? null,
+        ata_section: hint.ata_section ?? null,
+        heading_path: hint.heading_path ?? null,
+      });
+    };
+
+    if (text.length <= size) { push(text); continue; }
 
     let start = 0;
     while (start < text.length) {
       const end = Math.min(text.length, start + size);
       const slice = text.slice(start, end).trim();
-      if (slice) {
-        chunks.push({ chunk_index: idx++, page_number: page.page_number, content: slice });
-      }
+      if (slice) push(slice);
       if (end >= text.length) break;
       start = end - overlap;
     }
